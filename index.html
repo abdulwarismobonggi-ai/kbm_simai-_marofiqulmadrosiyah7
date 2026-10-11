@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Bahasa Arab - MTsN 3 Kab. Gorontalo</title>
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --sage-green: #a5d6a7;
+            --light-cream: #fbfbfc;
+            --card-bg: #ffffff;
+            --gold-accent: #c5a059;
+            --navy-blue: #1a237e;
+            --soft-yellow: #fff9c4;
+            --text-dark: #2c3e50;
+            --border-color: #d1e7dd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* LOGIN OVERLAY */
+        #login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-top: 6px solid var(--gold-accent);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: var(--navy-blue);
+            margin-bottom: 8px;
+            font-size: 1.4rem;
+        }
+
+        .login-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--navy-blue);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--navy-blue);
+        }
+
+        .btn-primary {
+            background: var(--navy-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #0d47a1;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* MAIN APP CONTAINER */
+        #app-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-green), var(--navy-blue));
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            border-bottom: 4px solid var(--gold-accent);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .user-badge {
+            display: inline-block;
+            background: var(--soft-yellow);
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* NAVIGATION TABS */
+        nav {
+            background: white;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: #f1f3f5;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--navy-blue);
+            transition: all 0.3s;
+        }
+
+        nav button.active, nav button:hover {
+            background: var(--navy-blue);
+            color: white;
+        }
+
+        /* CONTENT SECTIONS */
+        .content-area {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-green);
+        }
+
+        .card h3 {
+            color: var(--navy-blue);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        /* VOCABULARY GRID */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .vocab-item {
+            background: #f4f9f4;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .vocab-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        }
+
+        .arabic-text {
+            font-size: 1.6rem;
+            color: var(--navy-blue);
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .indo-text {
+            font-size: 0.95rem;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .read-btn {
+            background: var(--sage-green);
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #1b5e20;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .read-btn:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        /* QUIZ STYLES */
+        .quiz-box {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--gold-accent);
+        }
+
+        .question-title {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--navy-blue);
+            margin-bottom: 15px;
+        }
+
+        .options-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .options-list li {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .options-list li:hover {
+            background: #e2e8f0;
+            border-color: var(--navy-blue);
+        }
+
+        .options-list li.selected {
+            background: var(--soft-yellow);
+            border-color: var(--gold-accent);
+            font-weight: bold;
+        }
+
+        .feedback-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .feedback-box.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .feedback-box.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        /* CERTIFICATE CARD */
+        .certificate {
+            background: white;
+            border: 8px solid var(--gold-accent);
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .certificate h2 {
+            color: var(--navy-blue);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .certificate h4 {
+            color: var(--primary-green);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .cert-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--navy-blue);
+            border-bottom: 2px dashed var(--gold-accent);
+            display: inline-block;
+            padding: 0 20px;
+            margin: 10px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            background: #e9ecef;
+            margin-top: auto;
+        }
+
+        @media (max-width: 600px) {
+            .vocab-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MODAL LOGIN SISWA -->
+    <div id="login-modal">
+        <div class="login-card">
+            <h2>مَرْحَبًا بِكُمْ (Selamat Datang)</h2>
+            <p>Media Pembelajaran Bahasa Arab<br><b>MTsN 3 Kabupaten Gorontalo</b></p>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="student-name">Nama Lengkap Siswa:</label>
+                    <input type="text" id="student-name" placeholder="Contoh: Ahmad Fauzan" required>
+                </div>
+                <div class="form-group">
+                    <label for="student-class">Kelas:</label>
+                    <select id="student-class" required>
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="VII A">Kelas VII A</option>
+                        <option value="VII B">Kelas VII B</option>
+                        <option value="VII C">Kelas VII C</option>
+                        <option value="VII D">Kelas VII D</option>
+                        <option value="VII E">Kelas VII E</option>
+                        <option value="VII F">Kelas VII F</option>
+                        <option value="VII G">Kelas VII G</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Mulai Belajar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APLIKASI UTAMA -->
+    <div id="app-container">
+        <header>
+            <h1>الْمَرَافِقُ الْمَدْرَسِيَّةُ (Fasilitas Madrasah)</h1>
+            <p>Maharatul Istima' | Fase D - Kelas VII</p>
+            <div class="user-badge" id="display-user-info">Siswa: - | Kelas: -</div>
+        </header>
+
+        <nav>
+            <button onclick="switchTab('beranda')" class="tab-btn active" id="btn-beranda">Beranda</button>
+            <button onclick="switchTab('materi')" class="tab-btn" id="btn-materi">Kosa Kata (المفردات)</button>
+            <button onclick="switchTab('istima')" class="tab-btn" id="btn-istima">Menyimak (الاستماع)</button>
+            <button onclick="switchTab('kuis')" class="tab-btn" id="btn-kuis">Kuis Evaluasi</button>
+            <button onclick="switchTab('sertifikat')" class="tab-btn" id="btn-sertifikat">Sertifikat</button>
+        </nav>
+
+        <div class="content-area">
+            <!-- TAB BERANDA -->
+            <div id="beranda" class="section active">
+                <div class="card">
+                    <h3>Selamat Datang di Pembelajaran Interaktif Bahasa Arab</h3>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">
+                        Media pembelajaran mandiri ini dirancang khusus untuk siswa-siswi <b>MTsN 3 Kabupaten Gorontalo</b> guna menguasai materi <b>الْمَرَافِقُ الْمَدْرَسِيَّةُ</b> (Fasilitas Madrasah) melalui keterampilan menyimak (<i>Maharatul Istima'</i>).
+                    </p>
+                    <div style="background: var(--soft-yellow); padding: 15px; border-radius: 8px; border-left: 4px solid var(--gold-accent);">
+                        <strong>Petunjuk Belajar:</strong>
+                        <ol style="margin-left: 20px; margin-top: 5px; font-size: 0.9rem;">
+                            <li>Pelajari kosa kata pada menu <b>Kosa Kata</b> dan dengarkan pelafalannya.</li>
+                            <li>Latih pemahaman pendengaran Anda di menu <b>Menyimak</b>.</li>
+                            <li>Kerjakan 10 butir soal di menu <b>Kuis Evaluasi</b> untuk mengukur pemahaman Anda.</li>
+                            <li>Unduh kartu hasil belajar Anda setelah menyelesaikan seluruh rangkaian kegiatan.</li>
+                        </ol>
+                    </div>
+                    <div style="margin-top: 20px; font-size: 0.85rem; color: #555;">
+                        <p><b>Pengampu Mata Pelajaran:</b> Abdul Waris Mobonggi, S.Pd.I</p>
+                        <p><b>Madrasah:</b> MTsN 3 Kabupaten Gorontalo</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB MATERI / KOSA KATA -->
+            <div id="materi" class="section">
+                <div class="card">
+                    <h3>المفرَدَاتُ (Kosa Kata Fasilitas Madrasah)</h3>
+                    <p style="margin-bottom: 15px; font-size: 0.9rem;">Klik tombol suara untuk mendengar lafal Arab kosa kata berikut:</p>
+                    
+                    <div class="vocab-grid">
+                        <div class="vocab-item">
+                            <div class="arabic-text">فَصْلٌ</div>
+                            <div class="indo-text">Kelas</div>
+                            <button class="read-btn" onclick="speakArabic('Fashlun, artinya Kelas')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">مَكْتَبَةٌ</div>
+                            <div class="indo-text">Perpustakaan</div>
+                            <button class="read-btn" onclick="speakArabic('Maktabatun, artinya Perpustakaan')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">مَصْلَىً</div>
+                            <div class="indo-text">Mushalla</div>
+                            <button class="read-btn" onclick="speakArabic('Mashalan, artinya Mushalla')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">مَلْعَبٌ</div>
+                            <div class="indo-text">Lapangan</div>
+                            <button class="read-btn" onclick="speakArabic('Malabun, artinya Lapangan')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">فِنَاءٌ</div>
+                            <div class="indo-text">Halaman</div>
+                            <button class="read-btn" onclick="speakArabic('Finaaun, artinya Halaman')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">حَمَّامٌ</div>
+                            <div class="indo-text">Kamar Mandi / Toilet</div>
+                            <button class="read-btn" onclick="speakArabic('Hammamun, artinya Kamar Mandi')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">مَقْصَفٌ</div>
+                            <div class="indo-text">Kantin</div>
+                            <button class="read-btn" onclick="speakArabic('Maqshafun, artinya Kantin')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">غُرْفَةُ الْمُعَلِّمِينَ</div>
+                            <div class="indo-text">Ruang Guru</div>
+                            <button class="read-btn" onclick="speakArabic('Ghurfatul muallimiina, artinya Ruang Guru')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">مَخْبَرُ الْعُلُومِ</div>
+                            <div class="indo-text">Laboratorium Sains</div>
+                            <button class="read-btn" onclick="speakArabic('Makhbarul uluumi, artinya Laboratorium Sains')">🔊 Dengar Lafal</button>
+                        </div>
+                        <div class="vocab-item">
+                            <div class="arabic-text">بَوَّابَةٌ</div>
+                            <div class="indo-text">Gerbang Madrasah</div>
+                            <button class="read-btn" onclick="speakArabic('Bawwabatun, artinya Gerbang Madrasah')">🔊 Dengar Lafal</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB MENYIMAK (ISTIMA') -->
+            <div id="istima" class="section">
+                <div class="card">
+                    <h3>التَّدْرِيبُ عَلَى الِاسْتِمَاعِ (Latihan Menyimak)</h3>
+                    <p style="margin-bottom: 15px; font-size: 0.9rem;">Dengarkan kalimat bahasa Arab berikut, lalu pilih terjemahan yang paling tepat!</p>
+                    
+                    <div style="background: #f1f3f5; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Tekan tombol untuk mendengarkan:</p>
+                        <button class="btn-primary" style="width: auto; padding: 8px 20px;" onclick="speakArabic('هَذِهِ مَكْتَبَةٌ كَبِيرَةٌ نَقْرَأُ فِيهَا الْكُتُبَ')">🔊 Putar Kalimat Suara</button>
+                        <p style="margin-top: 10px; font-style: italic; font-size: 0.9rem; color: var(--navy-blue);">"Hadzihī maktabatun kabīratun naqra'u fīhal kutuba"</p>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <p style="font-weight: 600; margin-bottom: 8px;">Apa terjemahan kalimat yang baru saja Anda dengar?</p>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="checkIstima(this, false)" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; text-align: left;">A. Ini adalah lapangan yang luas untuk olahraga.</button>
+                            <button onclick="checkIstima(this, true)" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; text-align: left;">B. Ini adalah perpustakaan besar, kami membaca buku di dalamnya.</button>
+                            <button onclick="checkIstima(this, false)" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; text-align: left;">C. Ini adalah kantin madrasah tempat membeli makanan.</button>
+                        </div>
+                        <div id="istima-feedback" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB KUIS FORMATIF -->
+            <div id="kuis" class="section">
+                <div class="quiz-box">
+                    <div id="quiz-container">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB SERTIFIKAT -->
+            <div id="sertifikat" class="section">
+                <div class="certificate">
+                    <h2>شَهَادَةُ تَقْدِيرٍ</h2>
+                    <h4>Sertifikat Penyelesaian Belajar</h4>
+                    <p>Diberikan dengan bangga kepada:</p>
+                    <div class="cert-name" id="cert-student-name">Nama Siswa</div>
+                    <p style="margin-top: 10px;">Kelas: <span id="cert-student-class" style="font-weight: bold;">-</span></p>
+                    <p style="margin-top: 15px; font-size: 0.9rem; line-height: 1.5;">
+                        Atas keberhasilannya menyelesaikan modul pembelajaran interaktif <b>Al-Marafiq Al-Madrasiyyah (Maharatul Istima')</b><br>
+                        di <b>MTsN 3 Kabupaten Gorontalo</b>.
+                    </p>
+                    <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px;">
+                        <div style="text-align: center; font-size: 0.85rem;">
+                            <p>Mengetahui,</p>
+                            <p>Guru Mata Pelajaran</p>
+                            <br><br>
+                            <p style="font-weight: bold; text-decoration: underline;">Abdul Waris Mobonggi, S.Pd.I</p>
+                        </div>
+                        <div style="text-align: center; font-size: 0.85rem;">
+                            <p>Gorontalo, <span id="current-date"></span></p>
+                            <p>Siswa Ybs</p>
+                            <br><br>
+                            <p style="font-weight: bold; text-decoration: underline;" id="cert-sign-name">-</p>
+                        </div>
+                    </div>
+                    <button class="btn-primary" style="margin-top: 25px; width: auto; padding: 10px 25px;" onclick="window.print()">Cetak / Simpan Sertifikat</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2026 MTsN 3 Kabupaten Gorontalo | Pengembang: Abdul Waris Mobonggi, S.Pd.I
+        </footer>
+    </div>
+
+    <script>
+        // Data Login & State
+        let currentUser = { name: '', class: '' };
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const name = document.getElementById('student-name').value.trim();
+            const className = document.getElementById('student-class').value;
+
+            if (name && className) {
+                currentUser.name = name;
+                currentUser.class = className;
+
+                // Update UI badges
+                document.getElementById('display-user-info').innerText = `Siswa: ${name} | Kelas: ${className}`;
+                document.getElementById('cert-student-name').innerText = name;
+                document.getElementById('cert-student-class').innerText = className;
+                document.getElementById('cert-sign-name').innerText = name;
+
+                // Set Date
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', options);
+
+                // Hide Modal & Show App
+                document.getElementById('login-modal').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+
+                // Initialize Quiz
+                loadQuiz();
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // Speech Synthesis Helper
+        function speakArabic(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Fitur suara tidak didukung di browser ini.');
+            }
+        }
+
+        function checkIstima(btn, isCorrect) {
+            const feedback = document.getElementById('istima-feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback-box correct';
+                feedback.innerHTML = '✔ Benar sekali! "Hadzihī maktabatun kabīratun naqra\'u fīhal kutuba" berarti "Ini adalah perpustakaan besar, kami membaca buku di dalamnya".';
+                speakArabic('Sahih! Mumtaz');
+            } else {
+                feedback.className = 'feedback-box incorrect';
+                feedback.innerHTML = '❌ Kurang tepat. Silakan dengarkan kembali pelafalan kalimat dengan cermat.';
+                speakArabic('Khata! Mahawalah jadidah');
+            }
+        }
+
+        // Fungsi Kirim Data ke Google Sheet via Web App URL
+        function sendDataToGoogleSheet(name, className, studentScore) {
+            const url = 'https://script.google.com/macros/s/AKfycbx3HvBlSGU5Smd0ccJkp177Se2OusDtfhgoHtliBu4M5IE56Fwk3u5KOqXM-bGE_pV8/exec';
+            
+            const payload = {
+                name: name,
+                className: className,
+                score: studentScore,
+                status: 'Selesai Kuis'
+            };
+
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                console.log('Data nilai berhasil dikirim ke database Google Sheets.');
+            }).catch(err => {
+                console.error('Gagal mengirim data:', err);
+            });
+        }
+
+        // 10 Butir Soal Kuis Formatif
+        const quizData = [
+            {
+                q: "1. Apa terjemahan bahasa Arab dari kata 'Kelas'?",
+                options: ["أ. مَكْتَبَةٌ", "ب. فَصْلٌ", "ج. مَحْمَامٌ", "د. مَقْصَفٌ"],
+                answer: 1,
+                discussion: "Kata 'Kelas' dalam bahasa Arab adalah فَصْلٌ (Fashlun)."
+            },
+            {
+                q: "2. Tempat siswa meminjam dan membaca buku di madrasah disebut...",
+                options: ["أ. مَكْتَبَةٌ", "ب. مَلْعَبٌ", "ج. مَصْلَىً", "د. فِنَاءٌ"],
+                answer: 0,
+                discussion: "Perpustakaan dalam bahasa Arab adalah مَكْتَبَةٌ (Maktabatun)."
+            },
+            {
+                q: "3. Perhatikan kalimat: (هَذَا مَصْلَىً نُصَلِّي فِيهِ جَمَاعَةً). Apa arti kata (مَصْلَىً)?",
+                options: ["أ. Kantin", "b. Mushalla", "c. Lapangan", "d. Ruang Guru"],
+                answer: 1,
+                discussion: "Kata مَصْلَىً (Mashalan) berarti tempat shalat / Mushalla."
+            },
+            {
+                q: "4. Di mana tempat para guru beristirahat dan menyiapkan perangkat mengajar di madrasah?",
+                options: ["أ. غُرْفَةُ الْمُعَلِّمِينَ", "ب. مَخْبَرُ الْعُلُومِ", "ج. بَوَّابَةٌ", "د. حَمَّامٌ"],
+                answer: 0,
+                discussion: "Ruang guru dalam bahasa Arab disebut غُرْفَةُ الْمُعَلِّمِينَ (Ghurfatul muallimiina)."
+            },
+            {
+                q: "5. Apa terjemahan bahasa Arab untuk 'Lapangan' tempat olahraga?",
+                options: ["أ. فِنَاءٌ", "ب. مَلْعَبٌ", "ج. مَقْصَفٌ", "د. فَصْلٌ"],
+                answer: 1,
+                discussion: "Lapangan olahraga disebut مَلْعَبٌ (Mal'abun)."
+            },
+            {
+                q: "6. Tempat berwudhu dan buang hajat di lingkungan madrasah dinamakan...",
+                options: ["أ. مَكْتَبَةٌ", "ب. مَخْبَرُ الْعُلُومِ", "ج. حَمَّامٌ", "د. مَصْلَىً"],
+                answer: 2,
+                discussion: "Kamar mandi / toilet disebut حَمَّامٌ (Hammamun)."
+            },
+            {
+                q: "7. Manakah susunan kalimat yang benar untuk 'Ini adalah kantin madrasah'?",
+                options: ["أ. هَذَا مَقْصَفُ الْمَدْرَسَةِ", "ب. هَذِهِ مَكْتَبَةُ الْمَدْرَسَةِ", "ج. هَذَا فَصْلُ الْمَدْرَسَةِ", "د. هَذِهِ بَوَّابَةُ الْمَدْرَسَةِ"],
+                answer: 0,
+                discussion: "Kantin madrasah adalah مَقْصَفُ الْمَدْرَسَةِ (Maqshafun madrasati)."
+            },
+            {
+                q: "8. Ketika melakukan praktikum IPA, siswa pergi ke...",
+                options: ["أ. مَخْبَرُ الْعُلُومِ", "ب. مَلْعَبٌ", "ج. حَمَّامٌ", "د. فِنَاءٌ"],
+                answer: 0,
+                discussion: "Laboratorium sains dalam bahasa Arab adalah مَخْبَرُ الْعُلُومِ."
+            },
+            {
+                q: "9. Apa arti dari kosa kata (بَوَّابَةٌ) pada pintu masuk madrasah?",
+                options: ["أ. Jendela", "ب. Pagar", "ج. Gerbang / Pintu Gerbang", "د. Dinding"],
+                answer: 2,
+                discussion: "بَوَّابَةٌ (Bawwabatun) berarti gerbang madrasah."
+            },
+            {
+                q: "10. Manakah fasilitas madrasah yang biasanya digunakan untuk upacara bendera atau kegiatan di luar kelas?",
+                options: ["أ. فَصْلٌ", "ب. فِنَاءٌ (Halaman)", "ج. مَقْصَفٌ", "د. مَكْتَبَةٌ"],
+                answer: 1,
+                discussion: "فِنَاءٌ (Finaaun) adalah halaman madrasah tempat biasa diadakan kegiatan luar kelas."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuiz() {
+            const container = document.getElementById('quiz-container');
+            if (currentQuestion >= quizData.length) {
+                // Kirim data nilai ke Google Sheets otomatis
+                sendDataToGoogleSheet(currentUser.name, currentUser.class, score);
+
+                container.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="color: var(--navy-blue); margin-bottom: 10px;">Kuis Selesai!</h3>
+                        <p style="font-size: 1.1rem; margin-bottom: 15px;">Skor Anda: <b>${score} / ${quizData.length * 10}</b></p>
+                        <p style="color: #555; margin-bottom: 20px;">Terima kasih telah menyelesaikan evaluasi pembelajaran Al-Marafiq Al-Madrasiyyah.<br><i>Data nilai Anda telah tercatat di database madrasah.</i></p>
+                        <button class="btn-primary" style="width: auto; padding: 10px 20px;" onclick="switchTab('sertifikat')">Lihat & Cetak Sertifikat</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let q = quizData[currentQuestion];
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 0.85rem; font-weight: bold; color: #666;">Soal ${currentQuestion + 1} dari ${quizData.length}</span>
+                    <span style="font-size: 0.85rem; font-weight: bold; color: var(--primary-green);">Skor: ${score}</span>
+                </div>
+                <div class="question-title">${q.q}</div>
+                <ul class="options-list">
+            `;
+
+            q.options.forEach((opt, idx) => {
+                html += `<li onclick="selectOption(${idx})" id="opt-${idx}">${opt}</li>`;
+            });
+
+            html += `
+                </ul>
+                <div id="quiz-feedback" class="feedback-box"></div>
+                <button id="next-btn" class="btn-primary" style="display: none;" onclick="nextQuestion()">Soal Selanjutnya ➡</button>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function selectOption(selectedIdx) {
+            let q = quizData[currentQuestion];
+            let options = document.querySelectorAll('.options-list li');
+            
+            options.forEach(li => li.style.pointerEvents = 'none');
+
+            options[selectedIdx].classList.add('selected');
+
+            let feedback = document.getElementById('quiz-feedback');
+            if (selectedIdx === q.answer) {
+                options[selectedIdx].style.background = '#d4edda';
+                options[selectedIdx].style.borderColor = '#c3e6cb';
+                feedback.className = 'feedback-box correct';
+                feedback.innerHTML = '✔ Jawaban Benar! ' + q.discussion;
+                score += 10;
+                speakArabic('Sahih');
+            } else {
+                options[selectedIdx].style.background = '#f8d7da';
+                options[selectedIdx].style.borderColor = '#f5c6cb';
+                options[q.answer].style.background = '#d4edda';
+                feedback.className = 'feedback-box incorrect';
+                feedback.innerHTML = '❌ Jawaban Kurang Tepat. ' + q.discussion;
+                speakArabic('Khata');
+            }
+
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuiz();
+        }
+    </script>
+</body>
+</html>
